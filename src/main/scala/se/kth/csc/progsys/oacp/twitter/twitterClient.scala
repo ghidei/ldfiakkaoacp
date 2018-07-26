@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadLocalRandom
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.rbmhtechnology.eventuate.VectorTime
 import se.kth.csc.progsys.oacp.protocol._
-import se.kth.csc.progsys.oacp.OACPClient
 import protocol._
 import se.kth.csc.progsys.oacp.state.{Entry, FollowerEntry}
 
@@ -52,8 +51,7 @@ class twitterClient extends Actor with ActorLogging {
     case Melt =>
       log.info("receive CRDT message")
       receiveFrom = Some(sender())
-      raftActorRef foreach {
-        i =>
+      raftActorRef foreach { i =>
           i ! Melt
       }
 
@@ -104,7 +102,8 @@ class twitterClient extends Actor with ActorLogging {
       sender() ! EndReady
 
     case AddFollower(me: String, id: String) =>
-      self forward CvOp(FollowerEntry(me, id), "add")
+      self tell (CvOp(FollowerEntry(me, id), "add"), sender())
+
 
     case Tweet(msg: Map[String, String]) =>
       log.warning("send tweet message")

@@ -11,6 +11,8 @@ val akkaVersion = "2.4.12"
 
 val aspectVersion = "1.8.10"
 
+resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
+
 lazy val egspAkka = project
   .in(file("."))
   .settings(multiJvmSettings: _*)
@@ -34,7 +36,7 @@ lazy val egspAkka = project
       "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
       "org.aspectj"             % "aspectjweaver"         % aspectVersion,
       "org.aspectj"             % "aspectjrt"             % aspectVersion,
-      "com.rbmhtechnology" %% "eventuate-crdt" % "0.10",
+      "com.rbmhtechnology" %% "eventuate-crdt" % "0.8.1",
       "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "1.9.0",
       "com.typesafe.conductr" %% "akka24-conductr-bundle-lib" % "1.9.0",
       "com.github.nscala-time" %% "nscala-time" % "1.2.0",
@@ -49,4 +51,6 @@ lazy val egspAkka = project
     //connectInput in run := true
   )
   .configs(MultiJvm)
+
+resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
 

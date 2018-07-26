@@ -1,3 +1,6 @@
+
+# Description (sample taken from [CynthiaZ92/OACP](https://github.com/CynthiaZ92/OACP))
+
 ## Introduction for OACP
 ### Basic idea about OACP
 Observable Atomic Consistency Protocol is a memory model for distribued system. We extend the current GSP with monotonic update and try to get better performance.
@@ -51,3 +54,5 @@ This example uses twitter server and client and includes:
 3. count the number of messages between client and servers [Optional]
  
 Running command: using "sbt" to the interaction mode, then "multi-jvm:testOnly se.kth.csc.progsys.oacp.ExampleSpec".
+
+# To run [ldfi-akka](https://github.com/KTH/ldfi-akka)

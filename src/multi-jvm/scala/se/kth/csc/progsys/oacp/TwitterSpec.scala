@@ -14,7 +14,6 @@ import com.rbmhtechnology.eventuate.VectorTime
 import se.kth.csc.progsys.oacp.twitter.protocol._
 import se.kth.csc.progsys.oacp.cluster.RaftClusterListener
 import se.kth.csc.progsys.oacp.protocol._
-import se.kth.csc.progsys.oacp.shoppingcart.{CartClient, CartServer}
 import se.kth.csc.progsys.oacp.state.{Entry, FollowerEntry, ORCartEntry}
 import se.kth.csc.progsys.oacp.twitter.{twitterClient, twitterServer}
 

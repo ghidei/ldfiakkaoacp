@@ -6,7 +6,6 @@ import com.rbmhtechnology.eventuate.Versioned
 import protocol._
 import se.kth.csc.progsys.oacp
 import se.kth.csc.progsys.oacp.protocol._
-import se.kth.csc.progsys.oacp.OACPServer
 import se.kth.csc.progsys.oacp.protocol.{Candidate, Follower, Leader}
 import se.kth.csc.progsys.oacp.state._
 
@@ -31,25 +30,25 @@ class twitterServer(id: Int, automelt: Boolean)(implicit crdtType: CRDT[Map[Stri
   var raftActorRef = Set.empty[ActorRef]
   var nodes = List.empty[Address]
 
-  def membersExceptSelf(me: ActorRef) = raftActorRef filterNot {_ == me}
+  def membersExceptSelf(me: ActorRef): Set[ActorRef] = raftActorRef filterNot {_ == me}
   def majority(n: Int): Int = n/2 + 1
 
   //data structure, will try to use Data later
   //var clusterSelf: ActorRef = self
   var currentTerm: Term = Term(0)
   //FIXME: TYPE CONFUSION
-  var replicatedLog = Log.empty[Map[String, Set[String]], Map[String, String]] //need to backup all the time and revive when needed, very consuming but necessary, hope to find a better way later
-
+  //need to backup all the time and revive when needed, very consuming but necessary, hope to find a better way later
+  var replicatedLog: Log[Map[String, Set[String]], Map[String, String]] = Log.empty
   var votesReceived: Int = 0
 
-  var mState = crdtType.empty
+  var mState: Map[String, Set[String]] = crdtType.empty
   var nonUpdate :Option[Map[String, String]] = None
 
   //Volatile state on all servers and leaders
   //var commitIndex: Int = 0
   var lastApplied: Int = 0
-  var nextIndex = LogIndexMap.initialize(Set.empty, replicatedLog.nextIndex)
-  var matchIndex = LogIndexMap.initialize(Set.empty, 0)
+  var nextIndex: LogIndexMap = LogIndexMap.initialize(Set.empty, replicatedLog.nextIndex)
+  var matchIndex: LogIndexMap = LogIndexMap.initialize(Set.empty, 0)
 
   var LeaderIKnow: Option[ActorRef] = None
   var clientRef: Option[ActorRef] = None
