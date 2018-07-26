@@ -8,7 +8,7 @@ It's a combination between total order broadcast (which will be implemented thro
 1. Raft protocol
 2. CRDT representation (start with GCounter, ORset)
 ### API usage (counter example)
-#### Step One: CRDT implementation (state/CRDT)
+#### CRDT implementation (state/CRDT)
 Extend existing trait CRDT:
 ````
 case class RGCounter(...) extends CRDT[Array[Int], Int]
