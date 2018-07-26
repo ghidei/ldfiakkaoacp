@@ -21,31 +21,6 @@ object CRDT{
 
 }
 ````
-#### Step Two: application message definition (counter/protocol)
-````
-trait RGCounterProtocol {
-  sealed trait CounterCmnd
-  case class Add(num: Int) extends CounterCmnd
-  case object Get extends CounterCmnd
-  case class ResultIs(mValue: Int) extends CounterCmnd
-}
-````
-#### Step Three: user interface implementation (counter/CounterClient & CounterServer)
-````
-class CounterClient extends OACPClient[Array[Int], Int, String] {
-
-  val CounterClientBehavior: Receive = {
-  
-    ...
-    
-  }
-
-  override def receive = CounterClientBehavior.orElse(super.receive)
-  
-  ...
-  
-}
-````
 ### A small test example
 The code is included in src/multi-jvm/scala/se/kth/csc/progsys/oacp/ExampleSpec.scala
 This example uses twitter server and client and includes:
