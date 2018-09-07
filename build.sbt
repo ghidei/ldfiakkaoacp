@@ -18,7 +18,7 @@ lazy val egspAkka = project
   .settings(multiJvmSettings: _*)
   .settings(
     organization := "se.kth.csc.progsys",
-    scalaVersion := "2.11.8",
+    scalaVersion := "2.12.4",
     scalacOptions in Compile ++= Seq(
       "-deprecation",
       "-feature",
@@ -67,9 +67,7 @@ lazy val egspAkka = project
       "com.rbmhtechnology" %% "eventuate-crdt" % "0.8.1",
       "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "1.9.0",
       "com.typesafe.conductr" %% "akka24-conductr-bundle-lib" % "1.9.0",
-      "com.github.nscala-time" %% "nscala-time" % "1.2.0",
       "ch.qos.logback" % "logback-classic" % "1.1.1",
-      "org.json4s" %% "json4s-jackson" % "3.2.10",
       "com.typesafe" % "config" % "1.2.0"
     ),
     fork in run := true,
