@@ -3,8 +3,8 @@ package se.kth.csc.progsys.oacp
 import language.postfixOps
 import scala.concurrent.duration._
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike, path}
-import akka.actor.{Actor, ActorRef, ActorSelection, Props}
+import org.scalatest._
+import akka.actor._
 import akka.cluster.Cluster
 import akka.remote.testkit.MultiNodeConfig
 import akka.remote.testkit.MultiNodeSpec
@@ -14,10 +14,9 @@ import com.rbmhtechnology.eventuate.VectorTime
 import se.kth.csc.progsys.oacp.twitter.protocol._
 import se.kth.csc.progsys.oacp.cluster.RaftClusterListener
 import se.kth.csc.progsys.oacp.protocol._
-import se.kth.csc.progsys.oacp.state.{Entry, FollowerEntry, ORCartEntry}
 import se.kth.csc.progsys.oacp.twitter.{twitterClient, twitterServer}
 
-import scala.util.Random
+
 /**
   * Created by star on 2017-11-24.
   */

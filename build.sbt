@@ -19,10 +19,38 @@ lazy val egspAkka = project
   .settings(
     organization := "se.kth.csc.progsys",
     scalaVersion := "2.11.8",
-    scalacOptions in Compile ++= Seq("-deprecation", "-feature", "-unchecked", "-Xlog-reflective-calls", "-Xlint", "-deprecation", /*"-Ywarn-dead-code",*/ "-language:_", "-target:jvm-1.8", "-encoding", "UTF-8"),
-    javacOptions in Compile ++= Seq("-Xlint:unchecked", "-Xlint:deprecation", "-source", "1.8", "-target", "1.8"),
-    javaOptions in run ++= Seq("-Xms128m", "-Xmx1024m", "-Djava.library.path=./target/native","-javaagent:" + System.getProperty("user.home") + "/.ivy2/cache/org.aspectj/aspectjweaver/jars/aspectjweaver-" + aspectVersion + ".jar"),
-    jvmOptions in MultiJvm ++= Seq("-Xms128m", "-Xmx256M", "-Xmx1024m", "-Djava.library.path=./target/native","-javaagent:" + System.getProperty("user.home") + "/.ivy2/cache/org.aspectj/aspectjweaver/jars/aspectjweaver-" + aspectVersion + ".jar"),
+    scalacOptions in Compile ++= Seq(
+      "-deprecation",
+      "-feature",
+      "-unchecked",
+      "-Xlog-reflective-calls",
+      "-Xlint",
+      "-deprecation", /*"-Ywarn-dead-code",*/ "-language:_",
+      "-target:jvm-1.8",
+      "-encoding",
+      "UTF-8"
+    ),
+    javacOptions in Compile ++= Seq("-Xlint:unchecked",
+                                    "-Xlint:deprecation",
+                                    "-source",
+                                    "1.8",
+                                    "-target",
+                                    "1.8"),
+    javaOptions in run ++= Seq(
+      "-Xms128m",
+      "-Xmx1024m",
+      "-Djava.library.path=./target/native",
+      "-javaagent:" + System
+        .getProperty("user.home") + "/.ivy2/cache/org.aspectj/aspectjweaver/jars/aspectjweaver-" + aspectVersion + ".jar"
+    ),
+    jvmOptions in MultiJvm ++= Seq(
+      "-Xms128m",
+      "-Xmx256M",
+      "-Xmx1024m",
+      "-Djava.library.path=./target/native",
+      "-javaagent:" + System
+        .getProperty("user.home") + "/.ivy2/cache/org.aspectj/aspectjweaver/jars/aspectjweaver-" + aspectVersion + ".jar"
+    ),
     libraryDependencies ++= Seq(
       "com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
@@ -34,8 +62,8 @@ lazy val egspAkka = project
       "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion,
       "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
       "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
-      "org.aspectj"             % "aspectjweaver"         % aspectVersion,
-      "org.aspectj"             % "aspectjrt"             % aspectVersion,
+      "org.aspectj" % "aspectjweaver" % aspectVersion,
+      "org.aspectj" % "aspectjrt" % aspectVersion,
       "com.rbmhtechnology" %% "eventuate-crdt" % "0.8.1",
       "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "1.9.0",
       "com.typesafe.conductr" %% "akka24-conductr-bundle-lib" % "1.9.0",
@@ -53,4 +81,3 @@ lazy val egspAkka = project
   .configs(MultiJvm)
 
 resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
-
