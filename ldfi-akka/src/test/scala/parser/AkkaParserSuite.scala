@@ -119,10 +119,16 @@ class AkkaParserSuite extends FunSuite with Matchers {
   }
 
   test("Testing AkkaParser.parseRecipient") {
-    val line =
+    val localLine =
       "DEBUG[system-akka.actor.default-dispatcher-3]akka://system/user/C-receivedhandledmessageBroadcast(Somepayload)fromActor[akka://system/user/A#-1746850710]"
-    val recipient: String = AkkaParser.parseRecipient(line)
-    recipient shouldEqual "C"
+    val clusterLine =
+      "DEBUG[ExampleSpec-akka.actor.default-dispatcher-18]akka.tcp://ExampleSpec@localhost:34973/user/batching-server-receivedhandledmessageEvent(ClusterListenerIs(Actor[akka://ExampleSpec/user/raft-cluster#-26111901]),Data(Log(0,List()),Term(0),Set(),None,0))fromActor[akka://ExampleSpec/user/raft-cluster#-26111901]"
+
+    val localRec: String = AkkaParser.parseRecipient(localLine)
+    val clusterRec: String = AkkaParser.parseRecipient(clusterLine)
+
+    localRec shouldEqual "C"
+    clusterRec shouldEqual "batching-server"
   }
 
   test("Testing AkkaParser.parseMessage") {

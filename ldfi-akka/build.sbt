@@ -3,30 +3,20 @@ import sbt.Tests
 import com.typesafe.sbt.SbtMultiJvm.multiJvmSettings
 import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
-version := "1.0"
-
 val akkaVersion = "2.4.12"
 
 val aspectVersion = "1.8.10"
 
-resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
-
-lazy val egspAkka = project
-  .in(file("."))
-  .settings(multiJvmSettings: _*)
-  .settings(name := "oacp",
-            commonSettings,
-            libraryDependencies ++= egspAkkaLibs)
-  .configs(MultiJvm)
-
 lazy val ldfiakka = project
-  .in(file("ldfi-akka"))
+  .in(file("."))
   .settings(multiJvmSettings: _*)
   .settings(
     name := "ldfi-akka",
     mainClass in Compile := Some("ldfi.akka.Main"),
     commonSettings,
-    libraryDependencies ++= ldfiAkkaLibs
+    libraryDependencies ++= ldfiAkkaLibs,
+    scalaVersion := "2.12.4",
+    scalacOptions += "-Ywarn-unused-import"
   )
   .configs(MultiJvm)
 
@@ -99,5 +89,3 @@ lazy val ldfiAkkaLibs = egspAkkaLibs ++ Seq(
   "org.scalameta" %% "scalameta" % "3.7.4",
   "org.scalameta" %% "langmeta" % "3.7.4"
 )
-
-resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"

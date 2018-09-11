@@ -1,13 +1,7 @@
 <configuration>
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <target>System.out</target>
-        <encoder>
-            <pattern>%-5level[%thread] %X{akkaSource} - %msg%n</pattern>
-        </encoder>
-    </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>ldfi-akka/logs.log</file>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender" locking="true">
+        <file>logs.log</file>
         <append>true</append>
         <encoder>
             <pattern>%-5level[%thread] %X{akkaSource} - %msg%n</pattern>
@@ -17,7 +11,6 @@
     <logger name="akka" level="DEBUG"/>
 
     <root level="DEBUG">
-        <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>
 </configuration>

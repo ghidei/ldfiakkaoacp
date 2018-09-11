@@ -21,7 +21,7 @@ object AkkaParser {
     val lines =
       input.getLines
         .filter(x => x.contains("received handled message"))
-        .filterNot(x => x.contains("INFO")) //remove all log info
+        .filter(x => x.contains("DEBUG"))
 
     for (line <- lines) {
       val filteredLine = line.replaceAll("\\s", "")
@@ -62,7 +62,7 @@ object AkkaParser {
   }
 
   def parseRecipient(line: String): String = {
-    val pattern = """(?<=akka:)(.+)(?=-received)""".r
+    val pattern = """(?<=]akka)(.+)(?=-received)""".r
     var recipient = ""
     pattern.findAllIn(line).matchData foreach { m =>
       recipient = m.group(0);

@@ -9,18 +9,18 @@ object Main extends App {
 
     /******** TEMP ******/
 
-    /*
+
     val cmd = Seq("sbt", "multi-jvm:testOnly se.kth.csc.progsys.oacp.ExampleSpec")
     val res = scala.sys.process.Process(cmd, new java.io.File("/home/ygh@vizrt.internal/Desktop/KTH/samples/oacp/ldfi-akka")).!
 
-    */
+
 
     /********************/
 
 
     /******** RUNS OUTSIDE ******/
 
-    val res = Seq("sbt", "multi-jvm:testOnly se.kth.csc.progsys.oacp.ExampleSpec").!
+    //val res = Seq("sbt", "multi-jvm:testOnly se.kth.csc.progsys.oacp.ExampleSpec").!
 
     /****************************/
 

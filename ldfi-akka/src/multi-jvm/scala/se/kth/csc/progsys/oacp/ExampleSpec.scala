@@ -16,11 +16,9 @@ import se.kth.csc.progsys.oacp.cluster.RaftClusterListener
 import se.kth.csc.progsys.oacp.protocol._
 import se.kth.csc.progsys.oacp.twitter.{twitterClient, twitterServer}
 
-
 /**
   * Created by star on 2017-11-24.
   */
-
 object ExampleSpecConfig extends MultiNodeConfig {
   // register the named roles (nodes) of the test
   val server1 = role("server1")
@@ -46,16 +44,20 @@ object ExampleSpecConfig extends MultiNodeConfig {
 
   // this configuration will be used for all nodes
   // note that no fixed host names and ports are used
-  commonConfig(ConfigFactory.parseString("""
+  commonConfig(
+    ConfigFactory.parseString(
+      """
     akka.actor.provider = cluster
-    akka.remote.log-remote-lifecycle-events = off
+    akka.remote.log-remote-lifecycle-events = on
+    akka.loglevel=DEBUG
+    akka.loggers = ["akka.event.slf4j.Slf4jLogger"]
+    akka.logging-filter = "akka.event.slf4j.Slf4jLoggingFilter"
     """))
 
   nodeConfig(server1, server2, server3)(
     ConfigFactory.parseString("akka.cluster.roles =[raft]"))
 
-  nodeConfig(client1)(
-    ConfigFactory.parseString("akka.cluster.roles =[user]"))
+  nodeConfig(client1)(ConfigFactory.parseString("akka.cluster.roles =[user]"))
 
 }
 
@@ -65,8 +67,12 @@ class ExampleSpecMultiJvmNode2 extends ExampleSpec
 class ExampleSpecMultiJvmNode3 extends ExampleSpec
 class ExampleSpecMultiJvmNode4 extends ExampleSpec
 
-abstract class ExampleSpec extends MultiNodeSpec(ExampleSpecConfig)
-  with WordSpecLike with Matchers with BeforeAndAfterAll with ImplicitSender {
+abstract class ExampleSpec
+    extends MultiNodeSpec(ExampleSpecConfig)
+    with WordSpecLike
+    with Matchers
+    with BeforeAndAfterAll
+    with ImplicitSender {
 
   import ExampleSpecConfig._
 
@@ -88,21 +94,24 @@ abstract class ExampleSpec extends MultiNodeSpec(ExampleSpecConfig)
       runOn(server1) {
         Cluster(system) join node(server1).address
 
-        val server = system.actorOf(Props(new twitterServer(0, true)), "batching-server")
+        val server =
+          system.actorOf(Props(new twitterServer(0, true)), "batching-server")
         system.actorOf(RaftClusterListener.props(server), "raft-cluster")
       }
 
       runOn(server2) {
         Cluster(system) join node(server1).address
 
-        val server = system.actorOf(Props(new twitterServer(1, true)), "batching-server")
+        val server =
+          system.actorOf(Props(new twitterServer(1, true)), "batching-server")
         system.actorOf(RaftClusterListener.props(server), "raft-cluster")
       }
 
       runOn(server3) {
         Cluster(system) join node(server1).address
 
-        val server = system.actorOf(Props(new twitterServer(2, true)), "batching-server")
+        val server =
+          system.actorOf(Props(new twitterServer(2, true)), "batching-server")
         system.actorOf(RaftClusterListener.props(server), "raft-cluster")
       }
 
@@ -111,10 +120,11 @@ abstract class ExampleSpec extends MultiNodeSpec(ExampleSpecConfig)
 
       runOn(client1) {
         Cluster(system) join node(server1).address
-        val client = system.actorOf(Props[twitterClient], name = "twitter-client")
-        system.actorOf(RaftClusterListener.props(client), name = "raft-cluster-for-client")
+        val client =
+          system.actorOf(Props[twitterClient], name = "twitter-client")
+        system.actorOf(RaftClusterListener.props(client),
+                       name = "raft-cluster-for-client")
       }
-
 
       Thread.sleep(2000)
       testConductor.enter("all-up")
@@ -122,17 +132,18 @@ abstract class ExampleSpec extends MultiNodeSpec(ExampleSpecConfig)
 
       // create a client actor
       runOn(client1) {
-        val cli = system.actorSelection(node(client1) / "user" / "twitter-client")
+        val cli =
+          system.actorSelection(node(client1) / "user" / "twitter-client")
 
         val serverPaths = List(node(server1), node(server2), node(server3))
         val selections =
-          for(path <- serverPaths)
+          for (path <- serverPaths)
             yield system.actorSelection(path / "user" / "batching-server")
 
         cli ! AddFollower("user1", "user1")
         Thread.sleep(1000)
 
-        for(sel <- cli :: selections) {
+        for (sel <- cli :: selections) {
           sel ! StartMessage
           expectMsg(StartReady)
         }
@@ -143,13 +154,14 @@ abstract class ExampleSpec extends MultiNodeSpec(ExampleSpecConfig)
         cli ! Read("user1")
         expectMsgType[ResultIs](100.second)
 
-        for(sel <- cli :: selections) {
+        for (sel <- cli :: selections) {
           sel ! EndMessage
           expectMsg(EndReady)
         }
 
       }
-      testConductor.enter(Timeout(1000.seconds), collection.immutable.Seq("twitter example finished"))
+      testConductor.enter(Timeout(1000.seconds),
+                          collection.immutable.Seq("twitter example finished"))
     }
   }
 }
