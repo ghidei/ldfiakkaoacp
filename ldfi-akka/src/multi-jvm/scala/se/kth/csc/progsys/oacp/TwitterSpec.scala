@@ -3,8 +3,8 @@ package se.kth.csc.progsys.oacp
 import language.postfixOps
 import scala.concurrent.duration._
 import com.typesafe.config.ConfigFactory
-import org.scalatest._
-import akka.actor._
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike, path}
+import akka.actor.{Actor, ActorRef, ActorSelection, Props}
 import akka.cluster.Cluster
 import akka.remote.testkit.MultiNodeConfig
 import akka.remote.testkit.MultiNodeSpec
@@ -14,14 +14,15 @@ import com.rbmhtechnology.eventuate.VectorTime
 import se.kth.csc.progsys.oacp.twitter.protocol._
 import se.kth.csc.progsys.oacp.cluster.RaftClusterListener
 import se.kth.csc.progsys.oacp.protocol._
+import se.kth.csc.progsys.oacp.state.{Entry, FollowerEntry, ORCartEntry}
 import se.kth.csc.progsys.oacp.twitter.{twitterClient, twitterServer}
 
-
+import scala.util.Random
 /**
   * Created by star on 2017-11-24.
   */
 
-object ExampleSpecConfig extends MultiNodeConfig {
+object TwitterSpecConfig extends MultiNodeConfig {
   // register the named roles (nodes) of the test
   val server1 = role("server1")
   val server2 = role("server2")
@@ -60,15 +61,15 @@ object ExampleSpecConfig extends MultiNodeConfig {
 }
 
 // need one concrete test class per node
-class ExampleSpecMultiJvmNode1 extends ExampleSpec
-class ExampleSpecMultiJvmNode2 extends ExampleSpec
-class ExampleSpecMultiJvmNode3 extends ExampleSpec
-class ExampleSpecMultiJvmNode4 extends ExampleSpec
+class TwitterSpecMultiJvmNode1 extends TwitterSpec
+class TwitterSpecMultiJvmNode2 extends TwitterSpec
+class TwitterSpecMultiJvmNode3 extends TwitterSpec
+class TwitterSpecMultiJvmNode4 extends TwitterSpec
 
-abstract class ExampleSpec extends MultiNodeSpec(ExampleSpecConfig)
+abstract class TwitterSpec extends MultiNodeSpec(TwitterSpecConfig)
   with WordSpecLike with Matchers with BeforeAndAfterAll with ImplicitSender {
 
-  import ExampleSpecConfig._
+  import TwitterSpecConfig._
 
   override def initialParticipants = roles.size
 
@@ -82,9 +83,9 @@ abstract class ExampleSpec extends MultiNodeSpec(ExampleSpecConfig)
 
   val cluster = Cluster(system)
 
-  "The Example Test" must {
+  //ADD ITEM TEST PASSED
+  "The RGCounter sample" must {
     "three nodes work properly" in {
-      // The test for cluster set up
       runOn(server1) {
         Cluster(system) join node(server1).address
 
@@ -106,7 +107,8 @@ abstract class ExampleSpec extends MultiNodeSpec(ExampleSpecConfig)
         system.actorOf(RaftClusterListener.props(server), "raft-cluster")
       }
 
-      Thread.sleep(2000)
+      Thread.sleep(10000)
+
       testConductor.enter("raft-cluster-up")
 
       runOn(client1) {
@@ -114,13 +116,10 @@ abstract class ExampleSpec extends MultiNodeSpec(ExampleSpecConfig)
         val client = system.actorOf(Props[twitterClient], name = "twitter-client")
         system.actorOf(RaftClusterListener.props(client), name = "raft-cluster-for-client")
       }
-
-
-      Thread.sleep(2000)
+      Thread.sleep(10000)
       testConductor.enter("all-up")
       println("all-up")
 
-      // create a client actor
       runOn(client1) {
         val cli = system.actorSelection(node(client1) / "user" / "twitter-client")
 
@@ -136,12 +135,68 @@ abstract class ExampleSpec extends MultiNodeSpec(ExampleSpecConfig)
           sel ! StartMessage
           expectMsg(StartReady)
         }
+// proportion:
+        val r = new Random(100)
+        var id = 2
+        var num = 0
+        for (event <- 0 until 10) {
+          val i = r.nextInt(100)
+          if (i < 0) {
+            //Thread.sleep(1000)
+            cli ! AddFollower("user1", "user"+id)
+            id += 1
+          }
+          else {
+            cli ! Tweet(Map("user1" -> "tweet from user 1"))
+            num += 1
+            //Thread.sleep(2000)
+          }
+        }
 
-        cli ! AddFollower("user1", "user1")
-        cli ! Tweet(Map("user1" -> "tweet from user 1"))
+        Thread.sleep(20000)
+
+        println("num:" + num)
 
         cli ! Read("user1")
         expectMsgType[ResultIs](100.second)
+
+
+//        //2 new users
+//        for (i <- 1 until 3){
+//          cli ! AddFollower("user1", "user"+i)
+//        }
+//
+//
+//        Thread.sleep(10000)
+//
+//
+//
+//        for (i <- 1 until 101) {
+//          cli ! Tweet(Map("user1" -> "tweet from user 1"))
+//          Thread.sleep(2000)
+//        }
+//
+//        cli ! Read("user1")
+//        expectMsgType[ResultIs](100.second).content.size should be (100)
+
+//        //Normal tweet
+//        cli ! Tweet(Map("user1" -> "How are you? from user1"))
+//        cli ! Read("user1")
+//        expectMsgType[ResultIs](100.second).content should be (List("How are you? from user1"))
+//
+//        cli ! Tweet(Map("user2" -> "I'm user2 from user2"))
+//        cli ! Read("user2")
+//        expectMsgType[ResultIs](100.second).content should be (List("I'm user2 from user2"))
+//
+//        //After following, user2 follows user1 in this case
+//        cli ! AddFollower("user1", "user2")
+//        cli ! AddFollower("user1", "user3")
+//        cli ! Tweet(Map("user1" -> "I'm fine. from user1"))
+//        Thread.sleep(1000)
+//        cli ! Read("user2")
+//        expectMsgType[ResultIs](100.second).content should be (List("I'm user2 from user2", "I'm fine. from user1"))
+//        cli ! Read("user3")
+//        expectMsgType[ResultIs](100.second).content should be (List("I'm fine. from user1"))
 
         for(sel <- cli :: selections) {
           sel ! EndMessage
